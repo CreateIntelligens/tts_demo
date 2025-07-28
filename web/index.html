@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CosyVoice 簡化版</title>
+    <link rel="stylesheet" href="static/css/style.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🎙️ CosyVoice</h1>
+            <p>簡化版語音合成界面</p>
+        </header>
+
+        <div class="main-content">
+            <!-- 模式選擇 -->
+            <div class="section">
+                <h3>選擇模式</h3>
+                <div class="mode-selector">
+                    <button class="mode-btn active" data-mode="sft">預訓練音色</button>
+                    <button class="mode-btn" data-mode="zero_shot">3秒極速複刻</button>
+                    <button class="mode-btn" data-mode="instruct">自然語言控制</button>
+                </div>
+            </div>
+
+            <!-- 文字輸入 -->
+            <div class="section">
+                <h3>輸入文字</h3>
+                <textarea id="tts-text" placeholder="請輸入要合成的文字..." rows="3">我是通義實驗室語音團隊全新推出的生成式語音大模型，提供舒適自然的語音合成能力。</textarea>
+            </div>
+
+            <!-- 音色選擇 (SFT模式) -->
+            <div class="section" id="sft-section">
+                <h3>選擇音色</h3>
+                <select id="speaker-select">
+                    <option value="">載入中...</option>
+                </select>
+            </div>
+
+            <!-- 音頻上傳 (Zero-shot模式) -->
+            <div class="section hidden" id="zero-shot-section">
+                <h3>上傳參考音頻</h3>
+                <input type="file" id="audio-upload" accept="audio/*">
+                <div class="input-group">
+                    <label for="prompt-text">參考文字:</label>
+                    <input type="text" id="prompt-text" placeholder="請輸入參考音頻的文字內容">
+                </div>
+            </div>
+
+            <!-- 指令文字 (Instruct模式) -->
+            <div class="section hidden" id="instruct-section">
+                <h3>語音指令</h3>
+                <input type="text" id="instruct-text" placeholder="例如：請用溫柔的聲音說話">
+                <select id="instruct-speaker-select">
+                    <option value="">選擇音色...</option>
+                </select>
+            </div>
+
+            <!-- 控制面板 -->
+            <div class="section">
+                <div class="controls">
+                    <button id="generate-btn" class="generate-btn">🎵 生成語音</button>
+                    <div class="status" id="status">準備就緒</div>
+                </div>
+            </div>
+
+            <!-- 音頻播放 -->
+            <div class="section">
+                <h3>生成結果</h3>
+                <div id="audio-container">
+                    <audio id="result-audio" controls style="width: 100%; display: none;">
+                        您的瀏覽器不支援音頻播放。
+                    </audio>
+                    <div id="audio-placeholder">點擊生成語音後，結果將在此顯示</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="static/js/app.js"></script>
+</body>
+</html>

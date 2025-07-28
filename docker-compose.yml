@@ -1,0 +1,24 @@
+version: '3.8'
+
+services:
+  cosyvoice-web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: cosyvoice-web
+    ports:
+      - "8080:8080"  # 前端界面
+      - "50000:50000"  # FastAPI 後端
+    volumes:
+      - ./pretrained_models:/workspace/CosyVoice/pretrained_models
+      - ./web:/workspace/CosyVoice/web
+    environment:
+      - MODEL_DIR=pretrained_models/CosyVoice2-0.5B
+    restart: unless-stopped
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
