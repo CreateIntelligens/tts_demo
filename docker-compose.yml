@@ -1,24 +1,61 @@
-version: '3.8'
-
 services:
-  cosyvoice-web:
-    build:
-      context: .
-      dockerfile: Dockerfile
-    container_name: cosyvoice-web
+  cosyvoice-demo:
+    build: .
+    container_name: cosyvoice-demo
     ports:
-      - "8080:8080"  # 前端界面
-      - "50000:50000"  # FastAPI 後端
+      - "8878:8878"
     volumes:
-      - ./pretrained_models:/workspace/CosyVoice/pretrained_models
-      - ./web:/workspace/CosyVoice/web
+      # 只掛載需要的代碼目錄，避免覆蓋依賴
+      - ./cosyvoice:/workspace/cosyvoice
+      - ./web:/workspace/web
+      - ./data:/workspace/data
+      - ./scripts:/workspace/scripts
+      - ./configs:/workspace/configs
+      
+      # 配置文件也要掛載，但不包含 package.json (避免覆蓋)
+      - ./tsconfig.json:/workspace/tsconfig.json
+      - ./vite.config.ts:/workspace/vite.config.ts
+      - ./tailwind.config.ts:/workspace/tailwind.config.ts
+      - ./postcss.config.js:/workspace/postcss.config.js
+      - ./components.json:/workspace/components.json
+      
     environment:
-      - MODEL_DIR=pretrained_models/CosyVoice2-0.5B
+      # 應用配置
+      - NODE_ENV=development
+      - PORT=8878
+      
+      # 模型配置
+      - MODEL_BASE_DIR=/workspace/data/models
+      - COSYVOICE_0_5B_BASE=/workspace/data/models/CosyVoice2-0.5B
+      
+      # TTS 服務配置
+      - TTS_MAX_TEXT_LENGTH=500
+      - AUDIO_OUTPUT_DIR=/workspace/data/audio
+      - SUPPORTED_LANGUAGES=zh-TW,zh-CN
+      
+      # 性能調優
+      - TORCH_THREADS=4
+      - OMP_NUM_THREADS=4
+      
     restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8878/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 120s
+      
     deploy:
       resources:
+        limits:
+          memory: 8G
         reservations:
+          memory: 4G
           devices:
             - driver: nvidia
               count: 1
               capabilities: [gpu]
+
+networks:
+  default:
+    name: cosyvoice-demo
